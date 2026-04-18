@@ -33,14 +33,14 @@ I am a passionate **AI & Front-end Developer** dedicated to building high-perfor
 
 ### ✨ Key Features
 
-*   ☝️ **Precision Drawing** – Point your index finger to paint with glowing digital ink.
+*   ☝️ **Precision Drawing** – Point your index finger to paint with glowing neon ink.
+*   🎙️ **Voice Control (AI)** – Command the app hands-free! Switch colors, clear, or undo using just your voice.
+*   🤌 **Pinch to Move** – Use a natural pinch gesture to pan the entire canvas and position art anywhere.
+*   ✨ **Neon Aesthetics** – Interactive pulsing glow effects and vibrant drawing paths.
 *   🖐️ **Intuitive Erasing** – Open your palm to sweep and erase sections of your canvas.
 *   ✌️ **Gesture Switching** – Use two fingers to lift the pen (Pause) and move freely.
-*   📊 **Real-time Analytics** – Live FPS tracking and hand detection status indicators.
-*   🎨 **Creative Suite** – Customize your brush with unique colors, sizes, glow intensity, and opacity.
-*   🔄 **Smart Actions** – Full Undo support (Ctrl+Z) and one-click Canvas Clearing.
-*   📸 **Save & Share** – Export your masterpieces as high-quality PNGs with your webcam background.
-*   🛠️ **Responsive UI** – Fully optimized for various screen sizes with a premium Dark Mode aesthetic.
+*   📸 **Save masterpieces** – Export high-quality PNGs with your webcam background included.
+*   🛠️ **Responsive UI** – Fully optimized for Mobile & Desktop with a premium Dark Mode.
 
 ---
 
@@ -50,7 +50,8 @@ I am a passionate **AI & Front-end Developer** dedicated to building high-perfor
 | :--- | :--- |
 | **Frontend** | HTML5, CSS3 (Vanilla), JavaScript (ES6+) |
 | **AI Engine** | MediaPipe Hands |
-| **Fonts** | Google Fonts (Syne, JetBrains Mono) |
+| **HCI** | Web Speech API (Voice Interface) |
+| **Fonts** | Google Fonts (Outfit, JetBrains Mono) |
 | **Icons** | Custom SVG Icons |
 
 ---
@@ -92,7 +93,6 @@ This project demonstrates the power of browser-based AI and human-computer inter
 *   🔮 **AI Shape Recognition** – Automatically convert rough sketches into perfect geometric shapes.
 *   🎨 **3D Air Sculpting** – Extend the canvas into 3D space.
 *   🔗 **Multiplayer Collaboration** – Shared canvas for remote drawing sessions.
-*   🤖 **Voice Command Integration** – Control color and tool switching via voice.
 
 ---
 

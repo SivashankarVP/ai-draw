@@ -483,3 +483,64 @@ document.addEventListener('keydown',e=>{
 initPalette();
 updBrush();
 window.addEventListener('load',()=>setTimeout(setupMediaPipe,400));
+
+// ════════════════════════════════════════
+//  VOICE CONTROL (SpeechRecognition)
+// ════════════════════════════════════════
+const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+if(Speech){
+  const rec = new Speech();
+  rec.continuous = true;
+  rec.interimResults = false;
+  rec.lang = 'en-US';
+
+  rec.onstart = () => {
+    document.getElementById('vdot').style.background = '#2ecc71';
+    document.getElementById('vtxt').textContent = 'Voice Listening';
+  };
+
+  rec.onresult = (e) => {
+    const cmd = e.results[e.results.length - 1][0].transcript.toLowerCase();
+    console.log('Voice Command:', cmd);
+    
+    if(cmd.includes('red')) selectColorByValue('#ff6b6b');
+    else if(cmd.includes('blue')) selectColorByValue('#5c7cfa');
+    else if(cmd.includes('green')) selectColorByValue('#39ff14');
+    else if(cmd.includes('pink')) selectColorByValue('#ff3df7');
+    else if(cmd.includes('cyan') || cmd.includes('light blue')) selectColorByValue('#00e5ff');
+    else if(cmd.includes('white')) selectColorByValue('#ffffff');
+    else if(cmd.includes('yellow')) selectColorByValue('#ffd93d');
+    else if(cmd.includes('clear')) clearAll();
+    else if(cmd.includes('undo')) undo();
+    else if(cmd.includes('save') || cmd.includes('download')) saveImg();
+    else if(cmd.includes('larger') || cmd.includes('bigger')) { size = Math.min(size + 4, 28); setSize(size); }
+    else if(cmd.includes('smaller')) { size = Math.max(size - 4, 2); setSize(size); }
+    
+    toast('Voice: ' + cmd);
+  };
+
+  rec.onerror = () => {
+    document.getElementById('vdot').style.background = '#e74c3c';
+    document.getElementById('vtxt').textContent = 'Voice Error';
+  };
+
+  rec.onend = () => { if(camOn) rec.start(); }; // Keep listening
+  
+  // Start voice when app starts
+  const oldStartApp = startApp;
+  startApp = async () => {
+    await oldStartApp();
+    try { rec.start(); } catch(e) {}
+  };
+} else {
+  document.getElementById('vtxt').textContent = 'Voice Unsupported';
+}
+
+function selectColorByValue(val){
+  const btns = document.querySelectorAll('.cbtn');
+  btns.forEach(b => {
+    if(b.dataset.c === val){
+      b.click();
+    }
+  });
+}
