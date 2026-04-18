@@ -1,7 +1,7 @@
-# 🚀 AirCanvas — AI Powered Hand Gesture Drawing
+# 🚀 AI Draw — AI Powered Hand Gesture Drawing
 
 <p align="center"> 
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&color=00E5FF&center=true&vCenter=true&width=800&lines=AirCanvas;AI+Hand+Gesture+Drawing;Powered+by+MediaPipe;Built+with+Vanilla+JS" /> 
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&color=00E5FF&center=true&vCenter=true&width=800&lines=AI+Draw;AI+Hand+Gesture+Drawing;Powered+by+MediaPipe;Built+with+Vanilla+JS" /> 
 </p>
 
 <p align="center"> 

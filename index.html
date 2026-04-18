@@ -20,7 +20,7 @@
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "AirCanvas - AI Hand Gesture Drawing",
+  "name": "AI Draw - Hand Gesture Canvas",
   "operatingSystem": "Web",
   "applicationCategory": "MultimediaApplication",
   "author": {
@@ -29,7 +29,7 @@
     "url": "https://github.com/SivashankarVP"
   },
   "description": "An innovative AI-powered drawing tool that captures hand gestures via webcam and converts them into digital art.",
-  "softwareVersion": "1.0.1",
+  "softwareVersion": "1.0.2",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -41,18 +41,18 @@
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://sivashankarvp.netlify.app/ai-draw">
-<meta property="og:title" content="AirCanvas — Developed by Sivashankar V P">
-<meta property="og:description" content="Draw in the air with AI! A futuristic canvas built by Sivashankar V P that responds to your hand gestures.">
+<meta property="og:title" content="AI Draw — Developed by Sivashankar V P">
+<meta property="og:description" content="Draw in the air with AI! A futuristic canvas built by Sivashankar V P that responds to your hand gestures and voice.">
 <meta property="og:image" content="https://raw.githubusercontent.com/SivashankarVP/ai-draw/main/screens/dashboard.png">
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:url" content="https://sivashankarvp.netlify.app/ai-draw">
-<meta property="twitter:title" content="AirCanvas — AI Hand Gesture Drawing Tool">
+<meta property="twitter:title" content="AI Draw — AI Hand Gesture Drawing Tool">
 <meta property="twitter:description" content="An innovative AI-powered drawing tool developed by Sivashankar V P. Experience touchless digital art.">
 <meta property="twitter:image" content="https://raw.githubusercontent.com/SivashankarVP/ai-draw/main/screens/dashboard.png">
 
-<title>AirCanvas — AI Drawing Tool by Sivashankar V P</title>
+<title>AI Draw — AI Drawing Tool by Sivashankar V P</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -72,8 +72,8 @@
       <div class="modal-icon">
         <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       </div>
-      <h1>AirCanvas</h1>
-      <p>draw in the air · powered by mediapipe</p>
+      <h1>AI Draw</h1>
+      <p>ai-powered spatial canvas · by sivashankar</p>
     </div>
     <div class="g-grid">
       <div class="g-card">
@@ -89,6 +89,10 @@
         <div class="g-info"><h3>Move</h3><p>Pinch fingers to pan canvas</p></div>
       </div>
       <div class="g-card">
+        <div class="g-icon">🎙️</div>
+        <div class="g-info"><h3>Voice</h3><p>Say "Blue", "Clear", "Save"</p></div>
+      </div>
+      <div class="g-card">
         <div class="g-icon">✌️</div>
         <div class="g-info"><h3>Pause</h3><p>Two fingers lifts the pen</p></div>
       </div>
@@ -97,7 +101,7 @@
         <div class="g-info"><h3>Idle</h3><p>Close fist to rest freely</p></div>
       </div>
     </div>
-    <button id="go-btn" onclick="startApp()">Allow Camera &amp; Start Drawing →</button>
+    <button id="go-btn" onclick="startApp()">Enable AI &amp; Start Drawing →</button>
   </div>
 </div>
 
@@ -113,7 +117,7 @@
   <!-- TOP BAR -->
   <div id="topbar">
     <div>
-      <div class="logo">AirCanvas<span class="logo-sub">gesture drawing</span></div>
+      <div class="logo">AI Draw<span class="logo-sub">gesture drawing</span></div>
     </div>
     <div class="top-r">
       <div id="fps">-- fps</div>
