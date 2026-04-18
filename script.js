@@ -14,6 +14,7 @@ const PALETTE = ['#00e5ff','#ff3df7','#39ff14','#5c7cfa','#ff6b6b','#ffd93d','#c
 let color = PALETTE[0], size = 6, glow = 60, opac = 100;
 let paths = [], cur = null;
 let offX = 0, offY = 0, lastX = 0, lastY = 0;
+let isRainbow = false, hue = 0;
 let gesture = 'idle', gbuf = [], GBUF = 7;
 let camOn = false, handOn = false;
 let drawing = false;
@@ -52,6 +53,8 @@ function initPalette(){
     b.style.cssText=`background:${c};box-shadow:0 0 5px ${c}55`;
     b.dataset.c = c;
     b.onclick = ()=>{
+      isRainbow = false;
+      document.getElementById('rainbow-btn').classList.remove('sel');
       document.querySelectorAll('.cbtn').forEach(x=>x.classList.remove('sel'));
       b.classList.add('sel');
       color = c;
@@ -59,6 +62,15 @@ function initPalette(){
     };
     g.appendChild(b);
   });
+
+  // Rainbow Init
+  const rb = document.getElementById('rainbow-btn');
+  rb.onclick = () => {
+    isRainbow = true;
+    document.querySelectorAll('.cbtn').forEach(x=>x.classList.remove('sel'));
+    rb.classList.add('sel');
+    toast('Magic Neon Mode Active! ✨');
+  };
 }
 
 function setSize(v){
@@ -87,7 +99,7 @@ function updBrush(){
 //  DRAWING
 // ════════════════════════════════════════
 function startPath(x,y){
-  cur={pts:[{x,y}],color,size,glow:glow*.45,opac};
+  cur={pts:[{x,y}],color,isRainbow,hue,size,glow:glow*.45,opac};
 }
 function extPath(x,y){
   if(!cur) return;
@@ -109,12 +121,15 @@ function drawSeg(path){
   dX.save();
   dX.translate(offX, offY);
   dX.globalAlpha = path.opac/100;
-  dX.strokeStyle=path.color;
-  dX.lineWidth=path.size;
-  dX.lineCap='round';
-  dX.lineJoin='round';
-  dX.shadowColor=path.color;
-  dX.shadowBlur=path.glow * 1.5; // Enhanced neon
+  
+  const c = path.isRainbow ? `hsl(${path.hue}, 100%, 65%)` : path.color;
+  dX.strokeStyle = c;
+  dX.lineWidth = path.size;
+  dX.lineCap = 'round';
+  dX.lineJoin = 'round';
+  dX.shadowColor = c;
+  dX.shadowBlur = path.glow * 2.5; // MEGA NEON GLOW
+  
   dX.beginPath();
   const n=pts.length;
   if(n===2){
@@ -148,12 +163,15 @@ function drawFull(path){
   if(pts.length<2) return;
   dX.save();
   dX.globalAlpha=path.opac/100;
-  dX.strokeStyle=path.color;
+
+  const c = path.isRainbow ? `hsl(${path.hue}, 100%, 65%)` : path.color;
+  dX.strokeStyle=c;
   dX.lineWidth=path.size;
   dX.lineCap='round';
   dX.lineJoin='round';
-  dX.shadowColor=path.color;
-  dX.shadowBlur=path.glow * 1.5; // Enhanced neon
+  dX.shadowColor=c;
+  dX.shadowBlur=path.glow * 2.5; // MEGA NEON GLOW
+  
   dX.beginPath();
   dX.moveTo(pts[0].x,pts[0].y);
   for(let i=1;i<pts.length-1;i++){
@@ -339,6 +357,13 @@ animCursor();
 //  MEDIAPIPE RESULTS
 // ════════════════════════════════════════
 function onResults(res){
+  // hue cycle
+  if(isRainbow){ 
+    hue = (hue + 2) % 360; 
+    const rb = document.getElementById('rainbow-btn');
+    rb.style.boxShadow = `0 0 15px hsla(${hue}, 100%, 65%, 0.5)`;
+  }
+
   // fps
   fc++;const now=performance.now();
   if(now-ft>1000){fps=Math.round(fc*1000/(now-ft));document.getElementById('fps').textContent=fps+' fps';fc=0;ft=now;}
