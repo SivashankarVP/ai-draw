@@ -14,7 +14,11 @@
   <img src="https://img.shields.io/badge/Logic-JavaScript-yellow?logo=javascript" /> 
   <img src="https://img.shields.io/badge/AI%20Engine-MediaPipe-blue?logo=google" /> 
   <img src="https://img.shields.io/badge/HCI-Voice%20AI-purple?logo=audio-technica" />
-  <img src="https://img.shields.io/badge/Deployment-Netlify-00C7B7?logo=netlify" /> 
+  <img src="https://img.shields.io/badge/Live%20Demo-Visit%20App-00E5FF?style=for-the-badge&logo=netlify" />
+</p>
+
+<p align="center">
+  <b>🔗 Live Demo: <a href="https://ai-draw-voice.netlify.app">https://ai-draw-voice.netlify.app</a></b>
 </p>
 
 ---
