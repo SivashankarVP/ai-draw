@@ -549,18 +549,22 @@ if(Speech){
     const cmd = e.results[e.results.length - 1][0].transcript.toLowerCase();
     console.log('Voice Command:', cmd);
     
-    if(cmd.includes('red')) selectColorByValue('#ff6b6b');
-    else if(cmd.includes('blue')) selectColorByValue('#5c7cfa');
-    else if(cmd.includes('green')) selectColorByValue('#39ff14');
-    else if(cmd.includes('pink')) selectColorByValue('#ff3df7');
-    else if(cmd.includes('cyan') || cmd.includes('light blue')) selectColorByValue('#00e5ff');
+    if(cmd.includes('red') || cmd.includes('crimson')) selectColorByValue('#ff003c');
+    else if(cmd.includes('blue') || cmd.includes('cyan') || cmd.includes('sky')) selectColorByValue('#00f2ff');
+    else if(cmd.includes('green') || cmd.includes('neon green')) selectColorByValue('#39ff14');
+    else if(cmd.includes('sea') || cmd.includes('spring')) selectColorByValue('#00ff88');
+    else if(cmd.includes('pink') || cmd.includes('magenta')) selectColorByValue('#ff3de8');
     else if(cmd.includes('white')) selectColorByValue('#ffffff');
     else if(cmd.includes('yellow')) selectColorByValue('#ffd93d');
-    else if(cmd.includes('clear')) clearAll();
-    else if(cmd.includes('undo')) undo();
-    else if(cmd.includes('save') || cmd.includes('download')) saveImg();
-    else if(cmd.includes('larger') || cmd.includes('bigger')) { size = Math.min(size + 4, 28); setSize(size); }
-    else if(cmd.includes('smaller')) { size = Math.max(size - 4, 2); setSize(size); }
+    else if(cmd.includes('purple') || cmd.includes('violet')) selectColorByValue('#c77dff');
+    else if(cmd.includes('rainbow') || cmd.includes('magic') || cmd.includes('multi')) {
+      document.getElementById('rainbow-btn').click();
+    }
+    else if(cmd.includes('clear') || cmd.includes('reset')) clearAll();
+    else if(cmd.includes('undo') || cmd.includes('back')) undo();
+    else if(cmd.includes('save') || cmd.includes('download') || cmd.includes('capture')) saveImg();
+    else if(cmd.includes('larger') || cmd.includes('bigger') || cmd.includes('increase')) { size = Math.min(size + 6, 28); setSize(size); }
+    else if(cmd.includes('smaller') || cmd.includes('decrease')) { size = Math.max(size - 4, 2); setSize(size); }
     
     toast('Voice: ' + cmd);
   };
