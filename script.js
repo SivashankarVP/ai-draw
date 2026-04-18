@@ -536,7 +536,7 @@ window.addEventListener('load',()=>setTimeout(setupMediaPipe,400));
 const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
 if(Speech){
   const rec = new Speech();
-  rec.continuous = true;
+  rec.continuous = false; // Fresh start for each command
   rec.interimResults = false;
   rec.lang = 'en-US';
 
@@ -546,12 +546,14 @@ if(Speech){
   };
 
   rec.onresult = (e) => {
-    const cmd = e.results[e.results.length - 1][0].transcript.toLowerCase();
+    const cmd = e.results[0][0].transcript.toLowerCase().trim();
     console.log('Voice Command:', cmd);
     
-    if(cmd.includes('red') || cmd.includes('crimson')) selectColorByValue('#ff003c');
-    else if(cmd.includes('blue') || cmd.includes('cyan') || cmd.includes('sky')) selectColorByValue('#00f2ff');
-    else if(cmd.includes('green') || cmd.includes('neon green')) selectColorByValue('#39ff14');
+    // Exact & Partial Match Logic
+    if(cmd.includes('red')) selectColorByValue('#ff003c');
+    else if(cmd.includes('blue') || cmd.includes('cyan')) selectColorByValue('#00f2ff');
+    else if(cmd.includes('green') && cmd.includes('neon')) selectColorByValue('#39ff14');
+    else if(cmd.includes('green')) selectColorByValue('#39ff14');
     else if(cmd.includes('sea') || cmd.includes('spring')) selectColorByValue('#00ff88');
     else if(cmd.includes('pink') || cmd.includes('magenta')) selectColorByValue('#ff3de8');
     else if(cmd.includes('white')) selectColorByValue('#ffffff');
