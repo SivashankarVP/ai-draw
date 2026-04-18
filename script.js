@@ -13,6 +13,7 @@
 const PALETTE = ['#00e5ff','#ff3df7','#39ff14','#5c7cfa','#ff6b6b','#ffd93d','#c77dff','#ffffff'];
 let color = PALETTE[0], size = 6, glow = 60, opac = 100;
 let paths = [], cur = null;
+let offX = 0, offY = 0, lastX = 0, lastY = 0;
 let gesture = 'idle', gbuf = [], GBUF = 7;
 let camOn = false, handOn = false;
 let drawing = false;
@@ -106,13 +107,14 @@ function drawSeg(path){
   const pts=path.pts;
   if(pts.length<2) return;
   dX.save();
+  dX.translate(offX, offY);
   dX.globalAlpha = path.opac/100;
   dX.strokeStyle=path.color;
   dX.lineWidth=path.size;
   dX.lineCap='round';
   dX.lineJoin='round';
   dX.shadowColor=path.color;
-  dX.shadowBlur=path.glow;
+  dX.shadowBlur=path.glow * 1.5; // Enhanced neon
   dX.beginPath();
   const n=pts.length;
   if(n===2){
@@ -134,8 +136,11 @@ function drawSeg(path){
 
 function redraw(){
   dX.clearRect(0,0,dC.width,dC.height);
+  dX.save();
+  dX.translate(offX, offY);
   for(const p of paths) drawFull(p);
   if(cur) drawFull(cur);
+  dX.restore();
 }
 
 function drawFull(path){
@@ -148,7 +153,7 @@ function drawFull(path){
   dX.lineCap='round';
   dX.lineJoin='round';
   dX.shadowColor=path.color;
-  dX.shadowBlur=path.glow;
+  dX.shadowBlur=path.glow * 1.5; // Enhanced neon
   dX.beginPath();
   dX.moveTo(pts[0].x,pts[0].y);
   for(let i=1;i<pts.length-1;i++){
@@ -163,9 +168,10 @@ function drawFull(path){
 
 function erase(x,y){
   dX.save();
+  dX.translate(offX, offY);
   dX.globalCompositeOperation='destination-out';
   dX.beginPath();
-  dX.arc(x,y,ERASE_R,0,Math.PI*2);
+  dX.arc(x - offX, y - offY, ERASE_R, 0, Math.PI*2);
   dX.fillStyle='rgba(0,0,0,1)';
   dX.fill();
   dX.restore();
@@ -225,6 +231,11 @@ function detectGesture(lm){
   const mUp = fingerUp(lm,12,10);
   const rUp = fingerUp(lm,16,14);
   const pUp = fingerUp(lm,20,18);
+  
+  // Move detection (Thumb + Index pinch)
+  const dist = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y);
+  if(dist < 0.05) return 'move';
+
   if(iUp&&mUp&&rUp&&pUp) return 'erase';
   if(iUp&&mUp&&!rUp&&!pUp) return 'pause';
   if(iUp&&!mUp&&!rUp&&!pUp) return 'draw';
@@ -301,6 +312,7 @@ function drawSkeleton(lm,g){
 const GDATA={
   draw: {e:'☝️',n:'DRAWING',d:'index finger to draw'},
   erase:{e:'🖐️',n:'ERASING',d:'palm sweeps to erase'},
+  move: {e:'🤌',n:'MOVING',d:'pinch to pan canvas'},
   pause:{e:'✌️',n:'PAUSED',d:'two fingers · pen lifted'},
   idle: {e:'✊',n:'IDLE',d:'close fist to rest'},
 };
@@ -347,16 +359,28 @@ function onResults(res){
 
     const W=dC.width,H=dC.height;
     const ix=(1-lm[8].x)*W, iy=lm[8].y*H;
+    
+    // Pan Logic
+    if(gesture === 'move'){
+      if(lastX !== 0 && lastY !== 0){
+        offX += (ix - lastX);
+        offY += (iy - lastY);
+        redraw();
+      }
+      curEl.className='moving';
+    }
+    lastX = ix; lastY = iy;
+
     tx=ix;ty=iy;
     curEl.style.display='block';
 
     if(gesture==='draw'){
       curEl.className='drawing';
-      if(!drawing){startPath(ix,iy);drawing=true;}
-      else extPath(ix,iy);
+      if(!drawing){startPath(ix - offX, iy - offY);drawing=true;}
+      else extPath(ix - offX, iy - offY);
     } else {
       if(drawing){endPath();drawing=false;}
-      curEl.className=gesture==='erase'?'erasing':'';
+      if(gesture !== 'move') curEl.className=gesture==='erase'?'erasing':'';
     }
 
     if(gesture==='erase'){
