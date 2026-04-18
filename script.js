@@ -10,7 +10,7 @@
 // ════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════
-const PALETTE = ['#00e5ff','#ff3df7','#39ff14','#5c7cfa','#ff6b6b','#ffd93d','#c77dff','#ffffff'];
+const PALETTE = ['#00f2ff','#00ff88','#ff3de8','#39ff14','#ff003c','#ffd93d','#c77dff','#ffffff'];
 let color = PALETTE[0], size = 6, glow = 60, opac = 100;
 let paths = [], cur = null;
 let offX = 0, offY = 0, lastX = 0, lastY = 0;
@@ -123,18 +123,39 @@ function drawSeg(path){
   dX.globalAlpha = path.opac/100;
   
   const c = path.isRainbow ? `hsl(${path.hue}, 100%, 65%)` : path.color;
+  
+  // Layer 1: The Glow
   dX.strokeStyle = c;
-  dX.lineWidth = path.size;
+  dX.lineWidth = path.size * 1.8;
   dX.lineCap = 'round';
   dX.lineJoin = 'round';
   dX.shadowColor = c;
-  dX.shadowBlur = path.glow * 2.5; // MEGA NEON GLOW
+  dX.shadowBlur = path.glow * 3.5; // Intense outer glow
+  dX.globalAlpha = 0.4;
+  renderPath(pts, true);
   
+  // Layer 2: The Bright Core
+  dX.globalAlpha = 1.0;
+  dX.strokeStyle = (path.color === '#ffffff') ? '#ffffff' : '#fff'; // Bright inner core
+  if(path.isRainbow) dX.strokeStyle = `hsl(${path.hue}, 100%, 90%)`;
+  dX.lineWidth = path.size * 0.4;
+  dX.shadowBlur = path.glow * 0.5;
+  renderPath(pts, true);
+
+  dX.restore();
+}
+
+function renderPath(pts, isSeg){
   dX.beginPath();
   const n=pts.length;
-  if(n===2){
+  if(!isSeg || n===2){
     dX.moveTo(pts[0].x,pts[0].y);
-    dX.lineTo(pts[1].x,pts[1].y);
+    for(let i=1;i<pts.length-1;i++){
+      const mx=(pts[i].x+pts[i+1].x)/2;
+      const my=(pts[i].y+pts[i+1].y)/2;
+      dX.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
+    }
+    dX.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
   } else {
     const i=n-2;
     const p0=pts[i-1]||pts[i];
@@ -146,41 +167,41 @@ function drawSeg(path){
     dX.quadraticCurveTo(p1.x,p1.y,m2x,m2y);
   }
   dX.stroke();
-  dX.restore();
 }
 
 function redraw(){
   dX.clearRect(0,0,dC.width,dC.height);
-  dX.save();
-  dX.translate(offX, offY);
   for(const p of paths) drawFull(p);
   if(cur) drawFull(cur);
-  dX.restore();
 }
 
 function drawFull(path){
   const pts=path.pts;
   if(pts.length<2) return;
   dX.save();
+  dX.translate(offX, offY);
   dX.globalAlpha=path.opac/100;
 
   const c = path.isRainbow ? `hsl(${path.hue}, 100%, 65%)` : path.color;
+
+  // Layer 1: Glow
   dX.strokeStyle=c;
-  dX.lineWidth=path.size;
+  dX.lineWidth=path.size * 1.8;
   dX.lineCap='round';
   dX.lineJoin='round';
   dX.shadowColor=c;
-  dX.shadowBlur=path.glow * 2.5; // MEGA NEON GLOW
-  
-  dX.beginPath();
-  dX.moveTo(pts[0].x,pts[0].y);
-  for(let i=1;i<pts.length-1;i++){
-    const mx=(pts[i].x+pts[i+1].x)/2;
-    const my=(pts[i].y+pts[i+1].y)/2;
-    dX.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
-  }
-  dX.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
-  dX.stroke();
+  dX.shadowBlur=path.glow * 3.5;
+  dX.globalAlpha = 0.4;
+  renderPath(pts, false);
+
+  // Layer 2: Core
+  dX.globalAlpha = 1.0;
+  dX.strokeStyle = (path.color === '#ffffff') ? '#ffffff' : '#fff';
+  if(path.isRainbow) dX.strokeStyle = `hsl(${path.hue}, 100%, 90%)`;
+  dX.lineWidth=path.size * 0.4;
+  dX.shadowBlur=path.glow * 0.5;
+  renderPath(pts, false);
+
   dX.restore();
 }
 
