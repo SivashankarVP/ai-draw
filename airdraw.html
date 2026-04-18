@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="AirCanvas - A powerful AI-driven hand gesture drawing application. Developed by Sivashankar V P. Paint in the air using your webcam and MediaPipe's real-time hand tracking.">
+<meta name="keywords" content="Sivashankar V P, Sivashankar VP Portfolio, AI Developer, Front-end Engineer, AirCanvas, hand gesture drawing, MediaPipe, computer vision, web-based drawing, gesture control, JavaScript Developer, React Developer">
+<meta name="author" content="Sivashankar V P">
+<link rel="canonical" href="https://sivashankarvp.netlify.app/ai-draw">
+
+<!-- Structured Data for SEO (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AirCanvas - AI Hand Gesture Drawing",
+  "operatingSystem": "Web",
+  "applicationCategory": "MultimediaApplication",
+  "author": {
+    "@type": "Person",
+    "name": "Sivashankar V P",
+    "url": "https://github.com/SivashankarVP"
+  },
+  "description": "An innovative AI-powered drawing tool that captures hand gestures via webcam and converts them into digital art.",
+  "softwareVersion": "1.0.0",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sivashankarvp.netlify.app/ai-draw">
+<meta property="og:title" content="AirCanvas — Developed by Sivashankar V P">
+<meta property="og:description" content="Draw in the air with AI! A futuristic canvas built by Sivashankar V P that responds to your hand gestures.">
+<meta property="og:image" content="https://raw.githubusercontent.com/SivashankarVP/ai-draw/main/screens/dashboard.png">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://sivashankarvp.netlify.app/ai-draw">
+<meta property="twitter:title" content="AirCanvas — AI Hand Gesture Drawing Tool">
+<meta property="twitter:description" content="An innovative AI-powered drawing tool developed by Sivashankar V P. Experience touchless digital art.">
+<meta property="twitter:image" content="https://raw.githubusercontent.com/SivashankarVP/ai-draw/main/screens/dashboard.png">
+
+<title>AirCanvas — AI Drawing Tool by Sivashankar V P</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#08080d;
+  --surface:rgba(14,14,22,0.88);
+  --surface2:rgba(18,18,30,0.97);
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.14);
+  --text:#dddde8;
+  --dim:rgba(221,221,232,0.42);
+  --accent:#00e5ff;
+  --accent2:rgba(0,229,255,0.18);
+  --r8:8px;--r14:14px;--r20:20px;
+  --ease:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:'Syne',sans-serif;color:var(--text)}
+/* ── LOADING ── */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity 0.5s}
+#loader.gone{opacity:0;pointer-events:none}
+.spin{width:36px;height:36px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--accent);border-radius:50%;animation:spin 0.75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-text{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);letter-spacing:.5px}
+/* ── MODAL ── */
+#modal-wrap{position:fixed;inset:0;background:rgba(8,8,13,0.88);backdrop-filter:blur(18px);z-index:1000;display:flex;align-items:center;justify-content:center;transition:opacity .4s}
+#modal-wrap.gone{opacity:0;pointer-events:none}
+#modal{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r20);padding:36px 40px;width:min(500px,92vw);animation:popIn .55s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{from{opacity:0;transform:translateY(28px) scale(.94)}to{opacity:1;transform:none}}
+.modal-head{text-align:center;margin-bottom:28px}
+.modal-icon{width:52px;height:52px;margin:0 auto 14px;background:var(--accent2);border:1px solid rgba(0,229,255,0.25);border-radius:16px;display:flex;align-items:center;justify-content:center}
+.modal-icon svg{width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.modal-head h1{font-size:26px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(130deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.modal-head p{font-size:12px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-top:5px}
+.g-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:26px}
+.g-card{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:var(--r14);padding:14px;display:flex;gap:12px;align-items:flex-start;transition:var(--ease)}
+.g-card:hover{border-color:var(--border2);background:rgba(255,255,255,0.04)}
+.g-icon{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.g-info h3{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.g-info p{font-size:11px;color:var(--dim);line-height:1.5;font-family:'JetBrains Mono',monospace}
+#go-btn{width:100%;padding:13px;background:var(--accent);color:#000;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:var(--r14);cursor:pointer;letter-spacing:.2px;transition:var(--ease);box-shadow:0 0 28px rgba(0,229,255,0.25)}
+#go-btn:hover{background:#2aeeff;box-shadow:0 0 45px rgba(0,229,255,0.4);transform:translateY(-1px)}
+/* ── APP ── */
+#app{position:relative;width:100vw;height:100vh;overflow:hidden}
+#webcam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 50%,rgba(8,8,13,.55) 100%);z-index:1;pointer-events:none}
+#draw-canvas,#fx-canvas,#skel-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#draw-canvas{z-index:2}
+#fx-canvas{z-index:3;opacity:.7}
+#skel-canvas{z-index:4}
+/* ── TOPBAR ── */
+#topbar{position:absolute;top:0;left:0;right:0;z-index:10;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(8,8,13,.7) 0%,transparent)}
+.logo{font-size:17px;font-weight:800;letter-spacing:-.3px;background:linear-gradient(130deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-family:'JetBrains Mono',monospace;font-size:10px;-webkit-text-fill-color:var(--dim);font-weight:400;display:block;margin-top:-1px}
+.top-r{display:flex;align-items:center;gap:7px}
+.ibtn{background:var(--surface);border:1px solid var(--border);border-radius:var(--r8);color:var(--text);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:var(--ease);flex-shrink:0}
+.ibtn:hover{border-color:var(--border2);background:rgba(255,255,255,0.07)}
+.ibtn.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px var(--accent2)}
+#fps{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);padding:5px 9px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r8);min-width:52px;text-align:center}
+/* ── STATUS ── */
+#status{position:absolute;top:62px;left:18px;z-index:10;display:flex;flex-direction:column;gap:5px}
+.st-row{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.st-dot{width:6px;height:6px;border-radius:50%;background:#2ecc71;flex-shrink:0;transition:background .3s}
+.st-dot.off{background:#e74c3c}
+/* ── SIDEBAR ── */
+#sidebar{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:10;display:flex;flex-direction:column;gap:8px;width:64px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r14);padding:10px 8px;backdrop-filter:blur(16px)}
+.plabel{font-size:7.5px;font-family:'JetBrains Mono',monospace;color:var(--dim);text-transform:uppercase;letter-spacing:1.8px;text-align:center;margin-bottom:8px;display:block}
+/* colors */
+#cpanel{width:64px}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.cbtn{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:var(--ease);flex-shrink:0}
+.cbtn:hover{transform:scale(1.18)}
+.cbtn.sel{border-color:#fff;box-shadow:0 0 8px currentColor}
+/* sliders */
+.spanel{display:flex;flex-direction:column;align-items:center;gap:6px}
+.sval{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim)}
+.svwrap{width:32px;height:72px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+input[type=range]{-webkit-appearance:none;appearance:none;width:72px;height:3px;background:rgba(255,255,255,0.1);border-radius:3px;outline:none;transform:rotate(-90deg);cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 7px rgba(0,229,255,0.5)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:pointer;border:none}
+/* tool btns */
+.tpanel{display:flex;flex-direction:column;gap:5px;padding:8px 7px}
+.tbtn{width:100%;height:33px;background:rgba(255,255,255,0.035);border:1px solid var(--border);border-radius:var(--r8);color:var(--text);font-size:14px;cursor:pointer;transition:var(--ease);display:flex;align-items:center;justify-content:center}
+.tbtn:hover{border-color:var(--border2);background:rgba(255,255,255,0.07)}
+.tbtn.red:hover{border-color:rgba(255,80,80,.45);color:#ff5050}
+.tbtn:active{transform:scale(.96)}
+/* ── GESTURE BAR ── */
+#gbar{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:10;display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:8px 18px 8px 12px;backdrop-filter:blur(16px);transition:border-color .3s,box-shadow .3s;white-space:nowrap}
+#gbar[data-g=draw]{border-color:rgba(0,229,255,.35);box-shadow:0 0 20px rgba(0,229,255,.1)}
+#gbar[data-g=erase]{border-color:rgba(255,107,107,.35);box-shadow:0 0 20px rgba(255,107,107,.1)}
+#gbar[data-g=pause]{border-color:rgba(255,217,61,.35);box-shadow:0 0 20px rgba(255,217,61,.1)}
+.gdot{width:7px;height:7px;border-radius:50%;background:var(--accent);transition:background .3s;animation:gblink 2s infinite}
+@keyframes gblink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+#gbar[data-g=draw] .gdot{background:#00e5ff}
+#gbar[data-g=erase] .gdot{background:#ff6b6b;box-shadow:0 0 6px #ff6b6b}
+#gbar[data-g=pause] .gdot{background:#ffd93d}
+#gbar[data-g=idle] .gdot{background:rgba(255,255,255,.25);animation:none}
+#gemoji{font-size:19px;transition:transform .2s}
+#gname{font-size:12px;font-weight:700;color:#fff;min-width:72px}
+#gdesc{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--dim)}
+/* ── CURSOR ── */
+#cur{position:absolute;pointer-events:none;z-index:20;transform:translate(-50%,-50%);display:none;transition:width .1s,height .1s}
+.cur-ring{width:18px;height:18px;border-radius:50%;border:2px solid var(--accent);box-shadow:0 0 10px rgba(0,229,255,.45);transition:all .15s}
+#cur.drawing .cur-ring{width:12px;height:12px;background:var(--accent);box-shadow:0 0 18px var(--accent)}
+#cur.erasing .cur-ring{width:50px;height:50px;border-color:#ff6b6b;box-shadow:0 0 12px rgba(255,107,107,.35)}
+/* ── TOAST ── */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(14,14,22,.95);border:1px solid var(--border2);border-radius:999px;padding:8px 18px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text);z-index:100;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── NO HAND ── */
+#nohand{position:absolute;top:66px;left:50%;transform:translateX(-50%);background:rgba(255,200,50,.08);border:1px solid rgba(255,200,50,.25);border-radius:999px;padding:5px 14px;font-size:11px;font-family:'JetBrains Mono',monospace;color:rgba(255,200,50,.75);z-index:10;display:none;transition:opacity .3s;white-space:nowrap}
+/* ── BRUSH PREVIEW ── */
+#brushprev{position:absolute;bottom:22px;left:18px;z-index:10;display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r14);padding:8px 12px;backdrop-filter:blur(16px)}
+.bprev-circle{border-radius:50%;flex-shrink:0;transition:all .2s}
+.bprev-info{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);line-height:1.6}
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  #sidebar{right:8px;width:56px}
+  .panel{padding:7px 6px}
+  .cbtn{width:17px;height:17px}
+  #gbar{bottom:14px;padding:6px 14px 6px 10px}
+  #gdesc{display:none}
+  #brushprev{display:none}
+  #status{display:none}
+}
+
+/* ── CREDITS ── */
+#dev-credit{
+  position:fixed;
+  bottom:20px;
+  right:90px;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 14px;
+  background:rgba(0,229,255,0.06);
+  border:1px solid rgba(0,229,255,0.2);
+  border-radius:999px;
+  backdrop-filter:blur(10px);
+  text-decoration:none;
+  transition:all 0.3s ease;
+}
+#dev-credit:hover{
+  background:rgba(0,229,255,0.12);
+  border-color:rgba(0,229,255,0.4);
+  transform:translateY(-2px);
+  box-shadow:0 5px 15px rgba(0,229,255,0.15);
+}
+#dev-credit .dev-img{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+  color:#000;
+  font-weight:bold;
+}
+#dev-credit span{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--dim);
+  letter-spacing:0.5px;
+}
+#dev-credit b{
+  color:var(--accent);
+  font-weight:600;
+}
+@media(max-width:600px){
+  #dev-credit{right:50%;transform:translateX(50%);bottom:70px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="spin"></div>
+  <div class="load-text" id="load-msg">Loading hand tracking models…</div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-wrap">
+  <div id="modal">
+    <div class="modal-head">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h1>AirCanvas</h1>
+      <p>draw in the air · powered by mediapipe</p>
+    </div>
+    <div class="g-grid">
+      <div class="g-card">
+        <div class="g-icon">☝️</div>
+        <div class="g-info"><h3>Draw</h3><p>Point index finger to paint</p></div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon">🖐️</div>
+        <div class="g-info"><h3>Erase</h3><p>Open palm sweeps to erase</p></div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon">✌️</div>
+        <div class="g-info"><h3>Pause</h3><p>Two fingers lifts the pen</p></div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon">✊</div>
+        <div class="g-info"><h3>Idle</h3><p>Close fist to rest freely</p></div>
+      </div>
+    </div>
+    <button id="go-btn" onclick="startApp()">Allow Camera &amp; Start Drawing →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <video id="webcam" autoplay muted playsinline></video>
+  <div class="vignette"></div>
+  <canvas id="draw-canvas"></canvas>
+  <canvas id="fx-canvas"></canvas>
+  <canvas id="skel-canvas"></canvas>
+  <div id="cur"><div class="cur-ring"></div></div>
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div>
+      <div class="logo">AirCanvas<span class="logo-sub">gesture drawing</span></div>
+    </div>
+    <div class="top-r">
+      <div id="fps">-- fps</div>
+      <button class="ibtn" id="cam-btn" onclick="toggleCam()" title="Toggle Camera">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </button>
+      <button class="ibtn" onclick="showHelp()" title="Help">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <div id="status">
+    <div class="st-row"><div class="st-dot off" id="cdot"></div><span id="ctxt">Camera OFF</span></div>
+    <div class="st-row"><div class="st-dot off" id="hdot"></div><span id="htxt">No Hand</span></div>
+  </div>
+
+  <div id="nohand">👋 Show your hand to the camera</div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="panel" id="cpanel">
+      <span class="plabel">COLOR</span>
+      <div class="cgrid" id="cgrid"></div>
+    </div>
+    <div class="panel spanel">
+      <span class="plabel">SIZE</span>
+      <div class="sval" id="szval">6px</div>
+      <div class="svwrap"><input type="range" id="sz-sl" min="2" max="28" value="6" step="1" oninput="setSize(this.value)"></div>
+    </div>
+    <div class="panel spanel">
+      <span class="plabel">GLOW</span>
+      <div class="sval" id="gwval">60%</div>
+      <div class="svwrap"><input type="range" id="gw-sl" min="0" max="100" value="60" step="1" oninput="setGlow(this.value)"></div>
+    </div>
+    <div class="panel spanel">
+      <span class="plabel">FADE</span>
+      <div class="sval" id="opval">100%</div>
+      <div class="svwrap"><input type="range" id="op-sl" min="10" max="100" value="100" step="1" oninput="setOpacity(this.value)"></div>
+    </div>
+    <div class="panel tpanel">
+      <button class="tbtn" onclick="undo()" title="Undo (Ctrl+Z)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+      </button>
+      <button class="tbtn red" onclick="clearAll()" title="Clear Canvas">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+      <button class="tbtn" onclick="saveImg()" title="Save (Ctrl+S)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- BRUSH PREVIEW -->
+  <div id="brushprev">
+    <div class="bprev-circle" id="bprev-dot"></div>
+    <div class="bprev-info" id="bprev-info">6px · 60% glow</div>
+  </div>
+
+  <!-- GESTURE BAR -->
+  <div id="gbar" data-g="idle">
+    <div class="gdot"></div>
+    <div id="gemoji">✊</div>
+    <div>
+      <div id="gname">IDLE</div>
+      <div id="gdesc">close fist to rest</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MEDIAPIPE -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+
+<script>
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+const PALETTE = ['#00e5ff','#ff3df7','#39ff14','#5c7cfa','#ff6b6b','#ffd93d','#c77dff','#ffffff'];
+let color = PALETTE[0], size = 6, glow = 60, opac = 100;
+let paths = [], cur = null;
+let gesture = 'idle', gbuf = [], GBUF = 7;
+let camOn = false, handOn = false;
+let drawing = false;
+let cx = 0, cy = 0, tx = 0, ty = 0; // cursor smooth
+let fps = 0, fc = 0, ft = 0;
+let hands = null, mp_cam = null;
+const ERASE_R = 36;
+const SPARKS = [];
+
+// ════════════════════════════════════════
+//  CANVAS SETUP
+// ════════════════════════════════════════
+const dC = document.getElementById('draw-canvas');
+const fC = document.getElementById('fx-canvas');
+const sC = document.getElementById('skel-canvas');
+const dX = dC.getContext('2d');
+const fX = fC.getContext('2d');
+const sX = sC.getContext('2d');
+
+function resize(){
+  const W = window.innerWidth, H = window.innerHeight;
+  [dC,fC,sC].forEach(c=>{c.width=W;c.height=H});
+  redraw();
+}
+window.addEventListener('resize', resize);
+resize();
+
+// ════════════════════════════════════════
+//  COLORS
+// ════════════════════════════════════════
+function initPalette(){
+  const g = document.getElementById('cgrid');
+  PALETTE.forEach((c,i)=>{
+    const b = document.createElement('div');
+    b.className='cbtn'+(i===0?' sel':'');
+    b.style.cssText=`background:${c};box-shadow:0 0 5px ${c}55`;
+    b.dataset.c = c;
+    b.onclick = ()=>{
+      document.querySelectorAll('.cbtn').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel');
+      color = c;
+      updBrush();
+    };
+    g.appendChild(b);
+  });
+}
+
+function setSize(v){
+  size=parseInt(v);
+  document.getElementById('szval').textContent=v+'px';
+  updBrush();
+}
+function setGlow(v){
+  glow=parseInt(v);
+  document.getElementById('gwval').textContent=v+'%';
+  updBrush();
+}
+function setOpacity(v){
+  opac=parseInt(v);
+  document.getElementById('opval').textContent=v+'%';
+  updBrush();
+}
+function updBrush(){
+  const d = document.getElementById('bprev-dot');
+  const sz = Math.max(8, Math.min(size*1.5, 32));
+  d.style.cssText=`width:${sz}px;height:${sz}px;background:${color};box-shadow:0 0 ${glow*.15}px ${color}`;
+  document.getElementById('bprev-info').textContent=`${size}px · ${glow}% glow`;
+}
+updBrush();
+
+// ════════════════════════════════════════
+//  DRAWING
+// ════════════════════════════════════════
+function startPath(x,y){
+  cur={pts:[{x,y}],color,size,glow:glow*.45,opac};
+}
+function extPath(x,y){
+  if(!cur) return;
+  const last=cur.pts[cur.pts.length-1];
+  if(Math.hypot(x-last.x,y-last.y)>1.5){
+    cur.pts.push({x,y});
+    drawSeg(cur);
+    spawnSpark(x,y,color);
+  }
+}
+function endPath(){
+  if(cur&&cur.pts.length>1) paths.push({...cur,pts:[...cur.pts]});
+  cur=null;
+}
+
+function drawSeg(path){
+  const pts=path.pts;
+  if(pts.length<2) return;
+  dX.save();
+  dX.globalAlpha = path.opac/100;
+  dX.strokeStyle=path.color;
+  dX.lineWidth=path.size;
+  dX.lineCap='round';
+  dX.lineJoin='round';
+  dX.shadowColor=path.color;
+  dX.shadowBlur=path.glow;
+  dX.beginPath();
+  const n=pts.length;
+  if(n===2){
+    dX.moveTo(pts[0].x,pts[0].y);
+    dX.lineTo(pts[1].x,pts[1].y);
+  } else {
+    const i=n-2;
+    const p0=pts[i-1]||pts[i];
+    const p1=pts[i];
+    const p2=pts[i+1];
+    const m1x=(p0.x+p1.x)/2, m1y=(p0.y+p1.y)/2;
+    const m2x=(p1.x+p2.x)/2, m2y=(p1.y+p2.y)/2;
+    dX.moveTo(m1x,m1y);
+    dX.quadraticCurveTo(p1.x,p1.y,m2x,m2y);
+  }
+  dX.stroke();
+  dX.restore();
+}
+
+function redraw(){
+  dX.clearRect(0,0,dC.width,dC.height);
+  for(const p of paths) drawFull(p);
+  if(cur) drawFull(cur);
+}
+
+function drawFull(path){
+  const pts=path.pts;
+  if(pts.length<2) return;
+  dX.save();
+  dX.globalAlpha=path.opac/100;
+  dX.strokeStyle=path.color;
+  dX.lineWidth=path.size;
+  dX.lineCap='round';
+  dX.lineJoin='round';
+  dX.shadowColor=path.color;
+  dX.shadowBlur=path.glow;
+  dX.beginPath();
+  dX.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length-1;i++){
+    const mx=(pts[i].x+pts[i+1].x)/2;
+    const my=(pts[i].y+pts[i+1].y)/2;
+    dX.quadraticCurveTo(pts[i].x,pts[i].y,mx,my);
+  }
+  dX.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
+  dX.stroke();
+  dX.restore();
+}
+
+function erase(x,y){
+  dX.save();
+  dX.globalCompositeOperation='destination-out';
+  dX.beginPath();
+  dX.arc(x,y,ERASE_R,0,Math.PI*2);
+  dX.fillStyle='rgba(0,0,0,1)';
+  dX.fill();
+  dX.restore();
+}
+
+function undo(){
+  if(paths.length){paths.pop();redraw();toast('Undone');}
+}
+function clearAll(){
+  paths=[];cur=null;dX.clearRect(0,0,dC.width,dC.height);toast('Canvas cleared');
+}
+function saveImg(){
+  const tmp=document.createElement('canvas');
+  tmp.width=dC.width;tmp.height=dC.height;
+  const t=tmp.getContext('2d');
+  t.save();t.scale(-1,1);t.translate(-tmp.width,0);
+  t.drawImage(document.getElementById('webcam'),0,0,tmp.width,tmp.height);
+  t.restore();
+  t.drawImage(dC,0,0);
+  const a=document.createElement('a');
+  a.download='aircanvas-'+Date.now()+'.png';
+  a.href=tmp.toDataURL('image/png');
+  a.click();
+  toast('Saved!');
+}
+
+// ════════════════════════════════════════
+//  SPARKS / FX
+// ════════════════════════════════════════
+function spawnSpark(x,y,c){
+  if(Math.random()>.35) return;
+  SPARKS.push({x,y,vx:(Math.random()-.5)*3,vy:(Math.random()-.5)*3,life:1,color:c,r:Math.random()*2+1});
+}
+function tickSparks(){
+  fX.clearRect(0,0,fC.width,fC.height);
+  for(let i=SPARKS.length-1;i>=0;i--){
+    const s=SPARKS[i];
+    s.x+=s.vx;s.y+=s.vy;s.life-=.06;s.vy+=.08;
+    if(s.life<=0){SPARKS.splice(i,1);continue;}
+    fX.save();
+    fX.globalAlpha=s.life*.6;
+    fX.fillStyle=s.color;
+    fX.shadowColor=s.color;fX.shadowBlur=6;
+    fX.beginPath();fX.arc(s.x,s.y,s.r,0,Math.PI*2);fX.fill();
+    fX.restore();
+  }
+}
+
+// ════════════════════════════════════════
+//  GESTURE DETECTION
+// ════════════════════════════════════════
+function fingerUp(lm,tip,pip){
+  return lm[tip].y < lm[pip].y - 0.01;
+}
+function detectGesture(lm){
+  const iUp = fingerUp(lm,8,6);
+  const mUp = fingerUp(lm,12,10);
+  const rUp = fingerUp(lm,16,14);
+  const pUp = fingerUp(lm,20,18);
+  if(iUp&&mUp&&rUp&&pUp) return 'erase';
+  if(iUp&&mUp&&!rUp&&!pUp) return 'pause';
+  if(iUp&&!mUp&&!rUp&&!pUp) return 'draw';
+  return 'idle';
+}
+function bufGesture(g){
+  gbuf.push(g);if(gbuf.length>GBUF)gbuf.shift();
+}
+function stableGesture(){
+  if(!gbuf.length) return 'idle';
+  const cnt={};
+  for(const g of gbuf) cnt[g]=(cnt[g]||0)+1;
+  return Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+// ════════════════════════════════════════
+//  HAND SKELETON
+// ════════════════════════════════════════
+const CONN=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+const TIPS=[4,8,12,16,20];
+
+function drawSkeleton(lm,g){
+  sX.clearRect(0,0,sC.width,sC.height);
+  const W=sC.width,H=sC.height;
+  const m=(l)=>({x:(1-l.x)*W,y:l.y*H});
+
+  // connections
+  sX.save();
+  sX.strokeStyle='rgba(255,255,255,0.2)';
+  sX.lineWidth=1.5;
+  for(const[a,b] of CONN){
+    const pa=m(lm[a]),pb=m(lm[b]);
+    sX.beginPath();sX.moveTo(pa.x,pa.y);sX.lineTo(pb.x,pb.y);sX.stroke();
+  }
+
+  // dots
+  for(let i=0;i<21;i++){
+    const p=m(lm[i]);
+    const isTip=TIPS.includes(i);
+    const isIndex=i===8;
+    sX.beginPath();
+    if(isIndex&&g==='draw'){
+      sX.arc(p.x,p.y,6,0,Math.PI*2);
+      sX.fillStyle=color;
+      sX.shadowColor=color;sX.shadowBlur=22;
+    } else if(isTip){
+      sX.arc(p.x,p.y,4,0,Math.PI*2);
+      sX.fillStyle='rgba(255,255,255,0.75)';
+      sX.shadowBlur=0;
+    } else {
+      sX.arc(p.x,p.y,2.5,0,Math.PI*2);
+      sX.fillStyle='rgba(255,255,255,0.3)';
+      sX.shadowBlur=0;
+    }
+    sX.fill();
+  }
+
+  // eraser circle
+  if(g==='erase'){
+    const palm=m(lm[9]);
+    sX.beginPath();
+    sX.arc(palm.x,palm.y,ERASE_R,0,Math.PI*2);
+    sX.strokeStyle='rgba(255,107,107,.75)';
+    sX.lineWidth=2;
+    sX.shadowColor='#ff6b6b';sX.shadowBlur=10;
+    sX.stroke();
+  }
+  sX.restore();
+}
+
+// ════════════════════════════════════════
+//  GESTURE UI
+// ════════════════════════════════════════
+const GDATA={
+  draw: {e:'☝️',n:'DRAWING',d:'index finger to draw'},
+  erase:{e:'🖐️',n:'ERASING',d:'palm sweeps to erase'},
+  pause:{e:'✌️',n:'PAUSED',d:'two fingers · pen lifted'},
+  idle: {e:'✊',n:'IDLE',d:'close fist to rest'},
+};
+function updGestureUI(g){
+  const d=GDATA[g]||GDATA.idle;
+  document.getElementById('gbar').dataset.g=g;
+  document.getElementById('gemoji').textContent=d.e;
+  document.getElementById('gname').textContent=d.n;
+  document.getElementById('gdesc').textContent=d.d;
+}
+
+// ════════════════════════════════════════
+//  CURSOR ANIMATION
+// ════════════════════════════════════════
+const curEl=document.getElementById('cur');
+function animCursor(){
+  cx+=(tx-cx)*.22;cy+=(ty-cy)*.22;
+  curEl.style.left=cx+'px';curEl.style.top=cy+'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+// ════════════════════════════════════════
+//  MEDIAPIPE RESULTS
+// ════════════════════════════════════════
+function onResults(res){
+  // fps
+  fc++;const now=performance.now();
+  if(now-ft>1000){fps=Math.round(fc*1000/(now-ft));document.getElementById('fps').textContent=fps+' fps';fc=0;ft=now;}
+
+  tickSparks();
+
+  if(res.multiHandLandmarks&&res.multiHandLandmarks.length){
+    const lm=res.multiHandLandmarks[0];
+    handOn=true;
+    document.getElementById('hdot').classList.remove('off');
+    document.getElementById('htxt').textContent='Hand Detected';
+    document.getElementById('nohand').style.display='none';
+
+    const raw=detectGesture(lm);
+    bufGesture(raw);
+    gesture=stableGesture();
+    updGestureUI(gesture);
+
+    const W=dC.width,H=dC.height;
+    const ix=(1-lm[8].x)*W, iy=lm[8].y*H;
+    tx=ix;ty=iy;
+    curEl.style.display='block';
+
+    if(gesture==='draw'){
+      curEl.className='drawing';
+      if(!drawing){startPath(ix,iy);drawing=true;}
+      else extPath(ix,iy);
+    } else {
+      if(drawing){endPath();drawing=false;}
+      curEl.className=gesture==='erase'?'erasing':'';
+    }
+
+    if(gesture==='erase'){
+      const px=(1-lm[9].x)*W,py=lm[9].y*H;
+      erase(px,py);
+      tx=px;ty=py;
+    }
+
+    drawSkeleton(lm,gesture);
+
+  } else {
+    handOn=false;
+    document.getElementById('hdot').classList.add('off');
+    document.getElementById('htxt').textContent='No Hand';
+    if(camOn) document.getElementById('nohand').style.display='block';
+    if(drawing){endPath();drawing=false;}
+    curEl.style.display='none';
+    gbuf=[];gesture='idle';updGestureUI('idle');
+    sX.clearRect(0,0,sC.width,sC.height);
+  }
+}
+
+// ════════════════════════════════════════
+//  CAMERA
+// ════════════════════════════════════════
+async function startCam(){
+  const vid=document.getElementById('webcam');
+  try{
+    mp_cam=new Camera(vid,{
+      onFrame:async()=>{if(hands)await hands.send({image:vid});},
+      width:1280,height:720
+    });
+    await mp_cam.start();
+    camOn=true;
+    document.getElementById('cam-btn').classList.add('on');
+    document.getElementById('cdot').classList.remove('off');
+    document.getElementById('ctxt').textContent='Camera ON';
+  } catch(e){
+    alert('Camera access denied. Please allow camera permissions and reload.');
+  }
+}
+
+async function toggleCam(){
+  if(camOn){
+    if(mp_cam){mp_cam.stop();mp_cam=null;}
+    camOn=false;
+    document.getElementById('cam-btn').classList.remove('on');
+    document.getElementById('cdot').classList.add('off');
+    document.getElementById('ctxt').textContent='Camera OFF';
+    document.getElementById('nohand').style.display='none';
+    document.getElementById('hdot').classList.add('off');
+    document.getElementById('htxt').textContent='No Hand';
+    sX.clearRect(0,0,sC.width,sC.height);
+    curEl.style.display='none';
+    gbuf=[];gesture='idle';updGestureUI('idle');
+  } else {
+    await startCam();
+  }
+}
+
+function showHelp(){
+  document.getElementById('modal-wrap').classList.remove('gone');
+  document.getElementById('go-btn').textContent='Continue Drawing →';
+}
+
+async function startApp(){
+  document.getElementById('modal-wrap').classList.add('gone');
+  if(!camOn) await startCam();
+}
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+function setupMediaPipe(){
+  hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
+  hands.setOptions({
+    maxNumHands:1,
+    modelComplexity:1,
+    minDetectionConfidence:0.75,
+    minTrackingConfidence:0.65
+  });
+  hands.onResults(onResults);
+  document.getElementById('loader').classList.add('gone');
+}
+
+// TOAST
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// KEYBOARD SHORTCUTS
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();saveImg();}
+  if(e.key==='Delete'||e.key==='Backspace'){clearAll();}
+});
+
+initPalette();
+window.addEventListener('load',()=>setTimeout(setupMediaPipe,400));
+</script>
+<!-- DEV CREDIT -->
+<a href="https://github.com/SivashankarVP" target="_blank" id="dev-credit">
+  <div class="dev-img">S</div>
+  <span>Developed by <b>Sivashankar V P</b></span>
+</a>
+
+</body>
+</html>
