@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="AirCanvas - A powerful AI-driven hand gesture drawing application. Developed by Sivashankar V P. Paint in the air using your webcam and MediaPipe's real-time hand tracking.">
+<meta name="keywords" content="Sivashankar V P, Sivashankar VP Portfolio, AI Developer, Front-end Engineer, AirCanvas, hand gesture drawing, MediaPipe, computer vision, web-based drawing, gesture control, JavaScript Developer, React Developer">
+<meta name="author" content="Sivashankar V P">
+<link rel="canonical" href="https://sivashankarvp.netlify.app/ai-draw">
+
+<!-- Structured Data for SEO (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AirCanvas - AI Hand Gesture Drawing",
+  "operatingSystem": "Web",
+  "applicationCategory": "MultimediaApplication",
+  "author": {
+    "@type": "Person",
+    "name": "Sivashankar V P",
+    "url": "https://github.com/SivashankarVP"
+  },
+  "description": "An innovative AI-powered drawing tool that captures hand gestures via webcam and converts them into digital art.",
+  "softwareVersion": "1.0.0",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sivashankarvp.netlify.app/ai-draw">
+<meta property="og:title" content="AirCanvas — Developed by Sivashankar V P">
+<meta property="og:description" content="Draw in the air with AI! A futuristic canvas built by Sivashankar V P that responds to your hand gestures.">
+<meta property="og:image" content="https://raw.githubusercontent.com/SivashankarVP/ai-draw/main/screens/dashboard.png">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://sivashankarvp.netlify.app/ai-draw">
+<meta property="twitter:title" content="AirCanvas — AI Hand Gesture Drawing Tool">
+<meta property="twitter:description" content="An innovative AI-powered drawing tool developed by Sivashankar V P. Experience touchless digital art.">
+<meta property="twitter:image" content="https://raw.githubusercontent.com/SivashankarVP/ai-draw/main/screens/dashboard.png">
+
+<title>AirCanvas — AI Drawing Tool by Sivashankar V P</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="spin"></div>
+  <div class="load-text" id="load-msg">Loading hand tracking models…</div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-wrap">
+  <div id="modal">
+    <div class="modal-head">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h1>AirCanvas</h1>
+      <p>draw in the air · powered by mediapipe</p>
+    </div>
+    <div class="g-grid">
+      <div class="g-card">
+        <div class="g-icon">☝️</div>
+        <div class="g-info"><h3>Draw</h3><p>Point index finger to paint</p></div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon">🖐️</div>
+        <div class="g-info"><h3>Erase</h3><p>Open palm sweeps to erase</p></div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon">✌️</div>
+        <div class="g-info"><h3>Pause</h3><p>Two fingers lifts the pen</p></div>
+      </div>
+      <div class="g-card">
+        <div class="g-icon">✊</div>
+        <div class="g-info"><h3>Idle</h3><p>Close fist to rest freely</p></div>
+      </div>
+    </div>
+    <button id="go-btn" onclick="startApp()">Allow Camera &amp; Start Drawing →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <video id="webcam" autoplay muted playsinline></video>
+  <div class="vignette"></div>
+  <canvas id="draw-canvas"></canvas>
+  <canvas id="fx-canvas"></canvas>
+  <canvas id="skel-canvas"></canvas>
+  <div id="cur"><div class="cur-ring"></div></div>
+
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div>
+      <div class="logo">AirCanvas<span class="logo-sub">gesture drawing</span></div>
+    </div>
+    <div class="top-r">
+      <div id="fps">-- fps</div>
+      <button class="ibtn" id="cam-btn" onclick="toggleCam()" title="Toggle Camera">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      </button>
+      <button class="ibtn" onclick="showHelp()" title="Help">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <div id="status">
+    <div class="st-row"><div class="st-dot off" id="cdot"></div><span id="ctxt">Camera OFF</span></div>
+    <div class="st-row"><div class="st-dot off" id="hdot"></div><span id="htxt">No Hand</span></div>
+  </div>
+
+  <div id="nohand">👋 Show your hand to the camera</div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="panel" id="cpanel">
+      <span class="plabel">COLOR</span>
+      <div class="cgrid" id="cgrid"></div>
+    </div>
+    <div class="panel spanel">
+      <span class="plabel">SIZE</span>
+      <div class="sval" id="szval">6px</div>
+      <div class="svwrap"><input type="range" id="sz-sl" min="2" max="28" value="6" step="1" oninput="setSize(this.value)"></div>
+    </div>
+    <div class="panel spanel">
+      <span class="plabel">GLOW</span>
+      <div class="sval" id="gwval">60%</div>
+      <div class="svwrap"><input type="range" id="gw-sl" min="0" max="100" value="60" step="1" oninput="setGlow(this.value)"></div>
+    </div>
+    <div class="panel spanel">
+      <span class="plabel">FADE</span>
+      <div class="sval" id="opval">100%</div>
+      <div class="svwrap"><input type="range" id="op-sl" min="10" max="100" value="100" step="1" oninput="setOpacity(this.value)"></div>
+    </div>
+    <div class="panel tpanel">
+      <button class="tbtn" onclick="undo()" title="Undo (Ctrl+Z)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+      </button>
+      <button class="tbtn red" onclick="clearAll()" title="Clear Canvas">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+      <button class="tbtn" onclick="saveImg()" title="Save (Ctrl+S)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- BRUSH PREVIEW -->
+  <div id="brushprev">
+    <div class="bprev-circle" id="bprev-dot"></div>
+    <div class="bprev-info" id="bprev-info">6px · 60% glow</div>
+  </div>
+
+  <!-- GESTURE BAR -->
+  <div id="gbar" data-g="idle">
+    <div class="gdot"></div>
+    <div id="gemoji">✊</div>
+    <div>
+      <div id="gname">IDLE</div>
+      <div id="gdesc">close fist to rest</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MEDIAPIPE -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+
+<!-- APP LOGIC -->
+<script src="script.js"></script>
+
+<!-- DEV CREDIT -->
+<a href="https://github.com/SivashankarVP" target="_blank" id="dev-credit">
+  <div class="dev-img">S</div>
+  <span>Developed by <b>Sivashankar V P</b></span>
+</a>
+
+</body>
+</html>

@@ -59,7 +59,9 @@ I am a passionate **AI & Front-end Developer** dedicated to building high-perfor
 
 ```text
 ai-draw/
-│── airdraw.html      # Main Application Entry (HTML, CSS, JS)
+│── index.html        # Main Entry Point
+│── style.css         # Styling & Aesthetics
+│── script.js         # Core Application Logic & AI Integration
 │── README.md         # Project Documentation
 ```
 
@@ -74,7 +76,7 @@ ai-draw/
     ```
 
 2.  **Run the Application**
-    *   Simply open `airdraw.html` in any modern web browser.
+    *   Simply open `index.html` in any modern web browser.
     *   *Note: Requires Camera Permissions to function.*
 
 ---
