@@ -1,3 +1,12 @@
+/* 
+  ======================================================
+  Project: AirCanvas - AI Hand Gesture Drawing
+  Core Logic & AI Integration
+  Created by: Sivashankar V P (https://github.com/SivashankarVP)
+  Copyright (c) 2024 Sivashankar V P. All Rights Reserved.
+  ======================================================
+*/
+
 // ════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════
