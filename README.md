@@ -13,8 +13,8 @@
   <img src="https://img.shields.io/badge/Frontend-HTML5%20%2F%20CSS3-orange?logo=html5" /> 
   <img src="https://img.shields.io/badge/Logic-JavaScript-yellow?logo=javascript" /> 
   <img src="https://img.shields.io/badge/AI%20Engine-MediaPipe-blue?logo=google" /> 
+  <img src="https://img.shields.io/badge/HCI-Voice%20AI-purple?logo=audio-technica" />
   <img src="https://img.shields.io/badge/Deployment-Netlify-00C7B7?logo=netlify" /> 
-  <img src="https://img.shields.io/badge/License-MIT-yellow" /> 
 </p>
 
 ---
@@ -33,14 +33,37 @@ I am a passionate **AI & Front-end Developer** dedicated to building high-perfor
 
 ### ✨ Key Features
 
-*   ☝️ **Precision Drawing** – Point your index finger to paint with glowing neon ink.
-*   🎙️ **Voice Control (AI)** – Command the app hands-free! Switch colors, clear, or undo using just your voice.
-*   🤌 **Pinch to Move** – Use a natural pinch gesture to pan the entire canvas and position art anywhere.
-*   ✨ **Neon Aesthetics** – Interactive pulsing glow effects and vibrant drawing paths.
+*   🌈 **Magic Neon Mode (RGB)** – Shifting gradient strokes that cycle through the full color spectrum.
+*   🕯️ **Dual-Layer Neon Engine** – Hyper-realistic rendering with a bright white core and soft atmospheric glow.
+*   🎙️ **Voice Control (AI)** – Command the app hands-free! Switch colors, sizes, or tools using natural speech.
+*   🤌 **Pinch & Move** – Use a natural pinch gesture to pan the entire canvas and position your art perfectly.
+*   ✨ **Neon Aesthetics** – Interactive pulsing glow effects and a premium dark-mode interface.
 *   🖐️ **Intuitive Erasing** – Open your palm to sweep and erase sections of your canvas.
-*   ✌️ **Gesture Switching** – Use two fingers to lift the pen (Pause) and move freely.
-*   📸 **Save masterpieces** – Export high-quality PNGs with your webcam background included.
-*   🛠️ **Responsive UI** – Fully optimized for Mobile & Desktop with a premium Dark Mode.
+*   📸 **Masterpiece Export** – High-quality PNG exports that combine your art with your webcam background.
+*   🛠️ **Fully Responsive** – Optimized for all devices, from high-end desktops to mobile browsers.
+
+---
+
+### 🖐️ Gesture Command Guide
+
+| Gesture | Action | Description |
+| :--- | :--- | :--- |
+| ☝️ **One Finger** | **DRAW** | Point your index finger to paint with glowing neon ink. |
+| 🖐️ **Open Palm** | **ERASE** | Sweep your palm across the screen to erase drawings. |
+| 🤌 **Pinch** | **MOVE** | Pinch thumb and index to drag the canvas (Pan mode). |
+| ✌️ **Two Fingers** | **PAUSE** | Lifts the pen so you can move your hand without drawing. |
+| ✊ **Closed Fist** | **IDLE** | The application rests while you move your hand freely. |
+
+---
+
+### 🎙️ Voice Assistant Guide
+
+Control your workspace by speaking these commands:
+
+*   **Colors**: *"Red", "Blue/Cyan", "Green", "Sea", "Pink", "Yellow", "Purple", "White"*
+*   **Special Modes**: *"Rainbow", "Magic"*
+*   **Tools**: *"Undo/Back", "Clear/Reset", "Save/Download"*
+*   **Brush**: *"Larger/Bigger", "Smaller/Decrease"*
 
 ---
 
@@ -48,11 +71,11 @@ I am a passionate **AI & Front-end Developer** dedicated to building high-perfor
 
 | Layer | Technology |
 | :--- | :--- |
-| **Frontend** | HTML5, CSS3 (Vanilla), JavaScript (ES6+) |
-| **AI Engine** | MediaPipe Hands |
-| **HCI** | Web Speech API (Voice Interface) |
-| **Fonts** | Google Fonts (Outfit, JetBrains Mono) |
-| **Icons** | Custom SVG Icons |
+| **Frontend** | HTML5 (Semantic), CSS3 (Modern Animations), JavaScript (ES6+) |
+| **AI Intelligence** | Google MediaPipe (Hand Landmarks Detection) |
+| **HCI Interface** | Web Speech API (Real-time Speech Recognition) |
+| **Design System** | Neon Pulse UX, Google Fonts (Outfit, JetBrains Mono) |
+| **Canvas** | Dual-Layer 2D Canvas Engine (Core + Glow) |
 
 ---
 
@@ -60,10 +83,10 @@ I am a passionate **AI & Front-end Developer** dedicated to building high-perfor
 
 ```text
 ai-draw/
-│── index.html        # Main Entry Point
-│── style.css         # Styling & Aesthetics
-│── script.js         # Core Application Logic & AI Integration
-│── README.md         # Project Documentation
+│── index.html        # Smart UI Structure & SEO Metadata
+│── style.css         # Neon Design System & Animations
+│── script.js         # AI Logic, Voice Engine & Rendering Logic
+│── README.md         # Project Documentation & Guide
 ```
 
 ---
@@ -77,59 +100,15 @@ ai-draw/
     ```
 
 2.  **Run the Application**
-    *   Simply open `index.html` in any modern web browser.
-    *   *Note: Requires Camera Permissions to function.*
-
----
-
-### 🎯 Use Case
-
-This project demonstrates the power of browser-based AI and human-computer interaction (HCI). It is ideal for creative expression, accessibility tools, or showcasing advanced web capabilities without the need for external hardware like stylus pens.
-
----
-
-### 🚀 Future Enhancements
-
-*   🔮 **AI Shape Recognition** – Automatically convert rough sketches into perfect geometric shapes.
-*   🎨 **3D Air Sculpting** – Extend the canvas into 3D space.
-*   🔗 **Multiplayer Collaboration** – Shared canvas for remote drawing sessions.
-
----
-
-### 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repo
-2. Create a new branch
-3. Make your changes
-4. Submit a pull request
+    *   Simply open `index.html` in any modern web browser (**Chrome/Edge** recommended for Voice AI).
+    *   *Note: Requires Camera and Microphone Permissions to function.*
 
 ---
 
 ### 📧 Contact
 
-📩 **sivashankarvp7@gmail.com**
-
----
-
-### ⭐ Support
-
-If you like this project:
-👉 Give it a ⭐ on GitHub
-👉 Share it on LinkedIn
-
----
-
-### 🙌 Acknowledgement
-
-Special thanks to the **MediaPipe** team for their incredible hand-tracking models and the web community for inspiring creative HCI applications.
-
----
-
-### 📜 License
-
-This project is licensed under the MIT License
+📩 **sivashankarvp7@gmail.com**  
+🔗 **[GitHub Profile](https://github.com/SivashankarVP)**
 
 ---
 
